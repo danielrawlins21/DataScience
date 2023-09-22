@@ -39,7 +39,10 @@ def hinge_loss_single(feature_vector, label, theta, theta_0):
         parameters.
     """
     # Your code here
-    raise NotImplementedError
+    prediction = np.dot(theta,feature_vector)
+    lss = max(0,1-label*(prediction+theta_0))
+
+    return lss
 
 
 
@@ -61,7 +64,16 @@ def hinge_loss_full(feature_matrix, labels, theta, theta_0):
     """
 
     # Your code here
-    raise NotImplementedError
+    #breakpoint()
+    sum_loss=0
+    n_samples,n_features = feature_matrix.shape
+    for i in range(n_samples):
+        feature_matrix_i =feature_matrix[i,:]
+        predict = np.dot(theta,feature_matrix_i)
+        ls = max(0,1-labels[i]*(predict+theta_0))
+        sum_loss+=ls
+    avg_loss=sum_loss/n_samples
+    return avg_loss
 
 
 
