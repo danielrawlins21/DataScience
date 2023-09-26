@@ -278,7 +278,34 @@ def pegasos(feature_matrix, labels, T, L):
         after T iterations through the feature matrix.
     """
     # Your code here
-    raise NotImplementedError
+    n,d = feature_matrix.shape
+    theta = np.zeros(d)
+    theta_0 = 0.0
+
+    n=0
+
+    for t in range(T):
+        
+        for i in get_order(feature_matrix.shape[0]):
+            n += 1
+            feature_vector = feature_matrix[i]
+            label = labels[i]
+            eta = 1/ np.sqrt(n)
+
+            theta, theta_0 = pegasos_single_step_update(
+                feature_vector,
+                label,
+                L,
+                eta,
+                theta,
+                theta_0
+            )
+            
+    return ( theta, theta_0 )
+
+
+
+
 
 
 

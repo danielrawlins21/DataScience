@@ -255,7 +255,7 @@ def check_pegasos_single_update():
         return
 
     feature_vector = np.array([1, 1])
-    label, theta, theta_0 = 1, np.array([-1, 1]), 1
+    label, theta, theta_0 = 1, np.array([-1, 1],dtype=float), 1
     L = 0.2
     eta = 0.1
     exp_res = (np.array([-0.88, 1.08]), 1.1)
@@ -266,7 +266,7 @@ def check_pegasos_single_update():
         return
 
     feature_vector = np.array([1, 2])
-    label, theta, theta_0 = 1, np.array([-1, 1]), -2
+    label, theta, theta_0 = 1, np.array([-1, 1],dtype=float), -2
     L = 0.2
     eta = 0.1
     exp_res = (np.array([-0.88, 1.18]), -1.9)
