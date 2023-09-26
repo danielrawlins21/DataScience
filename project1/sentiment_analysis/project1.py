@@ -342,7 +342,14 @@ def classify(feature_matrix, theta, theta_0):
         should be considered a positive classification.
     """
     # Your code here
-    raise NotImplementedError
+    pred=np.zeros(feature_matrix.shape[0])
+    for i in range(feature_matrix.shape[0]):
+        if (np.dot(theta,feature_matrix[i])+ theta_0) >=1e-8:
+            pred[i] = 1
+        else:
+            pred[i] = -1
+    return pred
+
 
 
 def classifier_accuracy(
@@ -379,7 +386,8 @@ def classifier_accuracy(
         accuracy of the trained classifier on the validation data.
     """
     # Your code here
-    raise NotImplementedError
+    #Training with feature matrix
+    (theta, theta_0) =
 
 
 
