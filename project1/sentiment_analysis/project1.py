@@ -231,13 +231,20 @@ def pegasos_single_step_update(
     """
     # Your code here
     pred = sum( np.dot(theta[i],feature_vector[i]) for i in range(len(feature_vector))) + theta_0
-    if label*pred<=1:
+    prediction = pred*label
+    #breakpoint()
+    if prediction<=1:
         for i in range(len(theta)):
-            theta[i] = ((1-eta*L)*theta[i]) + eta*label*feature_vector[i]
+            p1 = ((1-eta*L)*theta[i])
+            p2 = (eta*label*feature_vector[i])
+            
+            theta[i] = p1+p2
+        #print(theta)
         theta_0+= eta*label
     else:
         for i in range(len(theta)):
             theta[i] = ((1-eta*L)*theta[i])
+        
     
     return theta, theta_0
 
