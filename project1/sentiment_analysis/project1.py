@@ -100,16 +100,7 @@ def perceptron_single_step_update(
         the updated offset parameter `theta_0` as a floating point number
     """
     # Your code here
-    
-    #pred=np.dot(feature_vector,current_theta) + current_theta_0
-    pred = sum( np.dot(current_theta[i],feature_vector[i]) for i in range(len(feature_vector))) + current_theta_0
-    if label*pred<=0:
-        for i in range(len(current_theta)):
-            current_theta[i]+= label*feature_vector[i]
-        current_theta_0+= label
-    
-    return current_theta, current_theta_0
-
+    raise NotImplementedError
 
 
 
@@ -155,8 +146,7 @@ def perceptron(feature_matrix, labels, T):
         if conv:
             break        
     # Your code here
-    return (theta,theta_0)
-    
+    raise NotImplementedError
 
 
 
