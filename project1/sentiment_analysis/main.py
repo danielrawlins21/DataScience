@@ -6,7 +6,7 @@ import numpy as np
 # Data loading. There is no need to edit code in this section.
 #-------------------------------------------------------------------------------
 
-"""train_data = utils.load_data('reviews_train.tsv')
+train_data = utils.load_data('reviews_train.tsv')
 val_data = utils.load_data('reviews_val.tsv')
 test_data = utils.load_data('reviews_test.tsv')
 
@@ -18,13 +18,13 @@ dictionary = p1.bag_of_words(train_texts)
 
 train_bow_features = p1.extract_bow_feature_vectors(train_texts, dictionary)
 val_bow_features = p1.extract_bow_feature_vectors(val_texts, dictionary)
-test_bow_features = p1.extract_bow_feature_vectors(test_texts, dictionary)"""
+test_bow_features = p1.extract_bow_feature_vectors(test_texts, dictionary)
 
 #-------------------------------------------------------------------------------
 # Problem 5
 #-------------------------------------------------------------------------------
 
-toy_features, toy_labels = toy_data = utils.load_toy_data('toy_data.tsv')
+"""toy_features, toy_labels = toy_data = utils.load_toy_data('toy_data.tsv')
 #
 T = 100
 L = 0.2
@@ -40,7 +40,7 @@ def plot_toy_results(algo_name, thetas):
 
 plot_toy_results('Perceptron', thetas_perceptron)
 plot_toy_results('Average Perceptron', thetas_avg_perceptron)
-plot_toy_results('Pegasos', thetas_pegasos)
+plot_toy_results('Pegasos', thetas_pegasos)"""
 
 #-------------------------------------------------------------------------------
 # Problem 7
