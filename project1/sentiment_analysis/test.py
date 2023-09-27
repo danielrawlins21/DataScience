@@ -337,6 +337,7 @@ def check_classifier_accuracy():
     val_labels = np.array([-1, 1])
     exp_res = 1, 0
     T=1
+    #L=0.2
     if check_tuple(
             ex_name, p1.classifier_accuracy,
             exp_res,
