@@ -67,7 +67,7 @@ print("{:50} {:.4f}".format("Validation accuracy for Pegasos:", avg_peg_val_accu
 #-------------------------------------------------------------------------------
 # Problem 8
 #-------------------------------------------------------------------------------
-
+"""
 data = (train_bow_features, train_labels, val_bow_features, val_labels)
 
 # values of T and lambda to try
@@ -96,7 +96,7 @@ print('best = {:.4f}, L={:.4f}'.format(np.max(peg_tune_results_L[1]), Ls[np.argm
 utils.plot_tune_results('Perceptron', 'T', Ts, *pct_tune_results)
 utils.plot_tune_results('Avg Perceptron', 'T', Ts, *avg_pct_tune_results)
 utils.plot_tune_results('Pegasos', 'T', Ts, *peg_tune_results_T)
-utils.plot_tune_results('Pegasos', 'L', Ls, *peg_tune_results_L)
+utils.plot_tune_results('Pegasos', 'L', Ls, *peg_tune_results_L)"""
 
 #-------------------------------------------------------------------------------
 # Use the best method (perceptron, average perceptron or Pegasos) along with
@@ -106,7 +106,15 @@ utils.plot_tune_results('Pegasos', 'L', Ls, *peg_tune_results_L)
 #-------------------------------------------------------------------------------
 
 # Your code here
-
+print("The accuracy with the best T=25, L=0.01 is ", \
+      
+      p1.classifier_accuracy(
+          p1.pegasos,
+          train_bow_features,
+          train_bow_features,
+          train_labels,
+          test_labels,
+          T=25,L=0.01))
 #-------------------------------------------------------------------------------
 # Assign to best_theta, the weights (and not the bias!) learned by your most
 # accurate algorithm with the optimal choice of hyperparameters.
