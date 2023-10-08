@@ -16,7 +16,11 @@ def closed_form(X, Y, lambda_factor):
         represents the y-axis intercept of the model and therefore X[0] = 1
     """
     # YOUR CODE HERE
-    raise NotImplementedError
+    (n_samples,n_features) = X.shape
+    Id_Mat = np.identity(n_features)
+    theta =np.dot(np.linalg.inv(np.dot(X.T,X)+(lambda_factor*Id_Mat)),np.dot(X.T,Y)) 
+
+    return theta
 
 ### Functions which are already complete, for you to use ###
 
