@@ -154,7 +154,7 @@ def run_softmax_on_MNIST_mod3(temp_parameter=1):
 
 # TODO: Run run_softmax_on_MNIST_mod3(), report the error rate
 
-print('softmax test_error_mod3=', run_softmax_on_MNIST_mod3(temp_parameter=1))
+#print('softmax test_error_mod3=', run_softmax_on_MNIST_mod3(temp_parameter=1))
 #######################################################################
 # 7. Classification Using Manually Crafted Features
 #######################################################################
@@ -178,8 +178,10 @@ test_pca = project_onto_PC(test_x, pcs, n_components, feature_means)
 
 # TODO: Train your softmax regression model using (train_pca, train_y)
 #       and evaluate its accuracy on (test_pca, test_y).
-
-
+theta, cost_function_history = softmax_regression(train_pca, train_y, temp_parameter=1, alpha=0.3, lambda_factor=1.0e-4, k=10, num_iterations=150)
+plot_cost_function_over_time(cost_function_history)
+test_error = compute_test_error(test_pca, test_y, theta, temp_parameter=1)
+print("Error rate for 18-dimensional PCA features",test_error)
 # TODO: Use the plot_PC function in features.py to produce scatterplot
 #       of the first 100 MNIST images, as represented in the space spanned by the
 #       first 2 principal components found above.
