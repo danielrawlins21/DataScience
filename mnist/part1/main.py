@@ -162,7 +162,7 @@ def run_softmax_on_MNIST_mod3(temp_parameter=1):
 ## Dimensionality reduction via PCA ##
 
 # TODO: First fill out the PCA functions in features.py as the below code depends on them.
-
+"""
 
 n_components = 18
 
@@ -200,9 +200,14 @@ secondimage_reconstructed = reconstruct_PC(train_pca[1, ], pcs, n_components, tr
 plot_images(secondimage_reconstructed)
 plot_images(train_x[1, ])
 
-
+"""
 ## Cubic Kernel ##
 # TODO: Find the 10-dimensional PCA representation of the training and test set
+n_components = 10
+train_x_centered, feature_means = center_data(train_x)
+pcs = principal_components(train_x_centered)
+train_pca10 = project_onto_PC(train_x, pcs, n_components, feature_means)
+test_pca10 = project_onto_PC(test_x, pcs, n_components, feature_means)
 
 
 # TODO: First fill out cubicFeatures() function in features.py as the below code requires it.
@@ -215,3 +220,15 @@ test_cube = cubic_features(test_pca10)
 
 # TODO: Train your softmax regression model using (train_cube, train_y)
 #       and evaluate its accuracy on (test_cube, test_y).
+#theta, cost_function_history = softmax_regression(train_cube, train_y, temp_parameter=1, alpha=0.3, lambda_factor=1.0e-4, k=10, num_iterations=150)
+#plot_cost_function_over_time(cost_function_history)
+#test_error = compute_test_error(test_cube, test_y, theta, temp_parameter=1)
+#print("Error rate for 18-dimensional PCA features",test_error)
+from sklearn.svm import SVC
+from sklearn.metrics import mean_absolute_error
+svm_model = SVC(kernel='poly',degree=3,random_state=0)
+Model = svm_model.fit(train_cube,train_y)
+
+y_p = Model.predict(test_cube)
+test_error_SVM3 = compute_test_error_svm(test_y, y_p)
+print("Error on the test set:", test_error_SVM3)
