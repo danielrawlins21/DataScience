@@ -101,7 +101,9 @@ def run_gradient_descent_iteration(X, Y, theta, alpha, lambda_factor, temp_param
     #YOUR CODE HERE
     (k,n_s) = theta.shape[0],X.shape[0]
     
-    M = sparse.coo_matrix(([1]*n_s, (Y, range(n_s))), shape=(k,n_s)).toarray()
+    #M = sparse.coo_matrix(([1]*n_s, (Y, range(n_s))), shape=(k,n_s)).toarray()
+    M = np.zeros((k, n_s), dtype=int)
+    np.add.at(M, (Y, np.arange(n_s)), 1)
 
     prob = compute_probabilities(X,theta,temp_parameter)
     
