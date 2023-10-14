@@ -183,7 +183,45 @@ def average_perceptron(feature_matrix, labels, T):
             (averaged also over T iterations through the feature matrix).
     """
     # Your code here
-    raise NotImplementedError
+    n,d = feature_matrix.shape
+    theta = np.zeros(d)
+    theta_0 = 0
+
+    theta_s = np.zeros(d)
+    theta_0_s = 0
+
+    p_avg_theta = theta  
+    p_avg_theta_0 = theta_0
+
+    for _ in range(T):
+        #conv = False
+        #breakpoint()
+        for i in get_order(feature_matrix.shape[0]):
+            # Your code here
+            feature_vector = feature_matrix[i]
+            label = labels[i]
+
+            up_theta, up_theta_0 = perceptron_single_step_update(feature_vector,label,theta,theta_0)
+            """if  np.array_equal(up_theta,theta) or up_theta_0 ==theta_0:
+                conv = True"""
+
+
+            theta = up_theta
+            theta_0 = up_theta_0
+
+            theta_s += theta
+            theta_0_s += theta_0
+
+        avg_theta = theta_s/(n*(len(get_order(feature_matrix.shape[0]))*(_+1)))
+        avg_theta_0 = theta_0_s/(n*(len(get_order(feature_matrix.shape[0]))*(_+1)))
+        if np.array_equal(avg_theta,p_avg_theta) and avg_theta_0==p_avg_theta_0:
+            break
+        p_avg_theta = avg_theta
+        p_avg_theta_0 = avg_theta_0   
+    #breakpoint()
+    
+    # Your code here
+    return (avg_theta,avg_theta_0)
 
 
 def pegasos_single_step_update(
