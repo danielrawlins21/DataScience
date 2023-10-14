@@ -183,6 +183,7 @@ def average_perceptron(feature_matrix, labels, T):
             (averaged also over T iterations through the feature matrix).
     """
     # Your code here
+<<<<<<< HEAD
     n,d = feature_matrix.shape
     theta = np.zeros(d)
     theta_0 = 0
@@ -222,6 +223,25 @@ def average_perceptron(feature_matrix, labels, T):
     
     # Your code here
     return (avg_theta,avg_theta_0)
+=======
+    sum_theta, sum_theta_0  = np.zeros((feature_matrix.shape[1],)), 0.0
+    theta, theta_0 = np.zeros((feature_matrix.shape[1],)), 0.0
+
+    for t in range(T):
+        
+        n = 0
+        for i in get_order(feature_matrix.shape[0]):
+            (theta, theta_0) = perceptron_single_step_update(
+                feature_matrix[i,:],
+                labels[i],
+                theta,
+                theta_0)
+            n += 1
+            sum_theta = sum_theta + theta
+            sum_theta_0 = sum_theta_0 + theta_0
+           
+    return ( sum_theta / (n*T), sum_theta_0 / (n*T) )
+>>>>>>> 326d24b264fa44d050f1a2143048d3fe35fa882e
 
 
 def pegasos_single_step_update(
@@ -252,7 +272,23 @@ def pegasos_single_step_update(
         completed.
     """
     # Your code here
-    raise NotImplementedError
+    pred = sum( np.dot(theta[i],feature_vector[i]) for i in range(len(feature_vector))) + theta_0
+    prediction = pred*label
+    #breakpoint()
+    if prediction<=1:
+        for i in range(len(theta)):
+            p1 = ((1-eta*L)*theta[i])
+            p2 = (eta*label*feature_vector[i])
+            
+            theta[i] = p1+p2
+        #print(theta)
+        theta_0+= eta*label
+    else:
+        for i in range(len(theta)):
+            theta[i] = ((1-eta*L)*theta[i])
+        
+    
+    return theta, theta_0
 
 
 
@@ -284,7 +320,34 @@ def pegasos(feature_matrix, labels, T, L):
         after T iterations through the feature matrix.
     """
     # Your code here
-    raise NotImplementedError
+    n,d = feature_matrix.shape
+    theta = np.zeros(d)
+    theta_0 = 0.0
+
+    n=0
+
+    for t in range(T):
+        
+        for i in get_order(feature_matrix.shape[0]):
+            n += 1
+            feature_vector = feature_matrix[i]
+            label = labels[i]
+            eta = 1/ np.sqrt(n)
+
+            theta, theta_0 = pegasos_single_step_update(
+                feature_vector,
+                label,
+                L,
+                eta,
+                theta,
+                theta_0
+            )
+            
+    return ( theta, theta_0 )
+
+
+
+
 
 
 
@@ -321,7 +384,14 @@ def classify(feature_matrix, theta, theta_0):
         should be considered a positive classification.
     """
     # Your code here
-    raise NotImplementedError
+    pred=np.zeros(feature_matrix.shape[0])
+    for i in range(feature_matrix.shape[0]):
+        if (np.dot(theta,feature_matrix[i])+ theta_0) >=1e-8:
+            pred[i] = 1
+        else:
+            pred[i] = -1
+    return pred
+
 
 
 def classifier_accuracy(
@@ -358,7 +428,23 @@ def classifier_accuracy(
         accuracy of the trained classifier on the validation data.
     """
     # Your code here
-    raise NotImplementedError
+    #Training with feature matrix
+    (theta, theta_0) = classifier(
+        train_feature_matrix,
+        train_labels,
+        **kwargs
+    )
+    #Train with classify function
+    t_labels = classify(train_feature_matrix, theta, theta_0)
+    t_accur = accuracy(t_labels, train_labels)
+    print(t_accur)
+
+    #validation classify
+    v_labels = classify(val_feature_matrix, theta, theta_0)
+    v_acurr = accuracy(v_labels, val_labels)
+    print(v_acurr)
+
+    return(t_accur,v_acurr)
 
 
 
@@ -372,7 +458,7 @@ def extract_words(text):
         count as their own words.
     """
     # Your code here
-    raise NotImplementedError
+    #raise NotImplementedError
 
     for c in punctuation + digits:
         text = text.replace(c, ' ' + c + ' ')
@@ -392,11 +478,17 @@ def bag_of_words(texts, remove_stopword=False):
         integer `index`.
     """
     # Your code here
-    raise NotImplementedError
+    #raise NotImplementedError
     
     indices_by_word = {}  # maps word to unique index
     for text in texts:
         word_list = extract_words(text)
+        if remove_stopword == False:
+            stopword = []
+        else:
+            ##### Something you need to implement for Part 9
+            ##### Define what stopword is
+            stopword = []
         for word in word_list:
             if word in indices_by_word: continue
             if word in stopword: continue
@@ -425,7 +517,8 @@ def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
             feature_matrix[i, indices_by_word[word]] += 1
     if binarize:
         # Your code here
-        raise NotImplementedError
+        feature_matrix[feature_matrix > 0] = 1
+      
     return feature_matrix
 
 
