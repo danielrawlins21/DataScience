@@ -20,7 +20,12 @@ def polynomial_kernel(X, Y, c, p):
             kernel_matrix - (n, m) Numpy array containing the kernel matrix
     """
     # YOUR CODE HERE
-    raise NotImplementedError
+    Kdot = np.dot(X,Y.T)
+
+    K = (Kdot+c)**p
+
+    return K
+
 
 
 
@@ -39,4 +44,14 @@ def rbf_kernel(X, Y, gamma):
             kernel_matrix - (n, m) Numpy array containing the kernel matrix
     """
     # YOUR CODE HERE
-    raise NotImplementedError
+    (n,d) = X.shape
+    m = Y.shape[0]
+
+    K = np.zeros((n,m))
+
+    for i in range(n):
+        for j in range(m):
+            distance = np.sum((X[i,:]-Y[j,:])**2)
+            K[i,j] = np.exp(-gamma*distance)
+    
+    return K
