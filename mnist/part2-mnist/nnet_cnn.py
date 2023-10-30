@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import _pickle as c_pickle, gzip
+import pickle as c_pickle, gzip
 import numpy as np
 from tqdm import tqdm
 import torch
@@ -43,9 +43,18 @@ def main():
     #################################
     ## Model specification TODO
     model = nn.Sequential(
-              nn.Conv2d(1, 32, (3, 3)),
+              nn.Conv2d(1, 32, kernel_size=(3, 3)),
               nn.ReLU(),
-              nn.MaxPool2d((2, 2)),
+              nn.MaxPool2d(kernel_size=(2, 2)),
+              nn.Conv2d(32, 64,kernel_size=(3,3)),
+              nn.ReLU(),
+              nn.MaxPool2d(kernel_size=(2,2)),
+              Flatten(),
+              nn.Linear(1600,128),
+              #nn.ReLU(),
+              nn.Dropout(0.5),
+              nn.Linear(128,10)
+
             )
     ##################################
 
