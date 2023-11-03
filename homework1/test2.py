@@ -29,3 +29,14 @@ hinge_losses = [max(0, 1 - y[i] * (theta0 + theta1 * X[i, 0] + theta2 * X[i, 1])
 sum_of_hinge_losses = np.sum(hinge_losses)
 
 print("Sum of Hinge Losses:", sum_of_hinge_losses)
+
+theta0_new = theta0 / 2
+theta1_new = theta1 / 2
+theta2_new = theta2 / 2
+
+hinge_losses_new = [max(0, 1 - y[i] * (theta0_new + theta1_new * X[i, 0] + theta2_new * X[i, 1])) for i in range(len(X))]
+
+# Compute the sum of hinge losses for the new separator
+sum_of_hinge_losses_new = np.sum(hinge_losses_new)
+
+print("Sum of Hinge Losses for the Modified Separator:", sum_of_hinge_losses_new)
