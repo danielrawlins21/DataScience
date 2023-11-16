@@ -18,9 +18,14 @@ posts_Kmeans = [0,0,0,0,0]
 for k in K:
     for seed in [0,1,2,3,4]:
         init_model = common.init(X,k,seed)
-
-        kmeans_m = kmeans.run(X,k,init_model)
+        #breakpoint()
+        mixtures_Kmeans[seed],posts_Kmeans[seed],costs_Kmeans[seed] = kmeans.run(X,*init_model)
     print("|||||||| Clusters-",k," ||||||||")
     print("Lowest cost using Kmeans is:",np.min(costs_Kmeans))
-        
+    #print()
+    #best_seed_Kmeans[k] = np.armin(costs_Kmeans)
+    common.plot(X,
+                mixtures_Kmeans[best_seed_Kmeans[k]],
+                posts_Kmeans[best_seed_Kmeans[k]],
+                title="Kmeans")    
 
