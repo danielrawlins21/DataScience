@@ -18,7 +18,56 @@ def estep(X: np.ndarray, mixture: GaussianMixture) -> Tuple[np.ndarray, float]:
         float: log-likelihood of the assignment
 
     """
+    n, d = X.shape
+    mu, var, pi = mixture
+
+    K = mu.shape[0]
+
+    """f = np.zeros(
+        (n,K),
+        dtype=np.float64
+    )
+
+    for i in range(n):
+        
+        Cu_i = X[i,:] != 0
+        
+        dime = np.sum(Cu_i)
+
+        pre_ex = (-dime/2.0)*np.log((2*np.pi*var))
+
+        diffe = X[i,Cu_i] - mu[:,Cu_i]
+
+        norm = np.sum(diffe**2,axis=1)
+
+        f[i,:] = pre_ex - norm/(2*var)
     
+    f = f + np.log(pi + 1e-16)
+
+    logsums = logsumexp(f,axis=1).reshape(-1,1)
+
+    log_post = f - logsums
+
+    log_lh = np.sum(logsums, axis=0).item()
+
+    return np.exp(log_post), log_lh"""
+    delta = X.astype(bool).astype(int)
+
+    f = (np.sum(X**2, axis=1)[:,None] + (delta @ mu.T**2) - 2*(X @ mu.T))/(2*var) # This is using indicator matrix: fastest of all
+    # Pre-exponent term: A matrix of shape (n, K)
+    pre_exp = (-np.sum(delta, axis=1).reshape(-1,1)/2.0) @ (np.log((2*np.pi*var)).reshape(-1,1)).T
+    # Put them together
+    f = pre_exp - f
+
+    f = f + np.log(pi + 1e-16)  # This is the f(u,j) matrix
+    
+    # log of normalizing term in p(j|u)
+    logsums = logsumexp(f, axis=1).reshape(-1,1)  # Store this to calculate log_lh
+    log_posts = f - logsums # This is the log of posterior prob. matrix: log(p(j|u))
+    
+    log_lh = np.sum(logsums, axis=0).item()   # This is the log likelihood
+    
+    return np.exp(log_posts), log_lh
 
 
 
@@ -37,7 +86,61 @@ def mstep(X: np.ndarray, post: np.ndarray, mixture: GaussianMixture,
     Returns:
         GaussianMixture: the new gaussian mixture
     """
+    """(n, d) = X.shape
+    (mu_rev, _, _) = mixture
+    K = mu_rev.shape[0]
+
+    pi_rev = np.sum(post, axis=0)/n
+
+    delta = X.astype(bool).astype(int)
+
+    denominator = np.dot(post.T,delta)
+    numerator = np.dot(post.T,X)
+    up_ind = np.where(denominator>=1)
+    mu_rev[up_ind] = numerator[up_ind]/denominator[up_ind]
+
+    denom_var = np.sum(post*np.sum(delta,axis=1).reshape(-1,1),axis=0)
+
+    norms = np.zeros(
+        (n,K),
+        dtype=np.float64
+    )
+
+    for i in range(n):
+        Cu_i = X[i,:] !=0
+        diffe = X[i,Cu_i] - mu_rev[:,Cu_i]
+        norms[i,:] = np.sum(diffe**2,axis=1)
     
+    var_rev = np.maximum(np.sum(post*norms, axis=0)/denom_var, min_variance)
+
+    return GaussianMixture(mu_rev,var_rev,pi_rev)"""
+    n, d = X.shape
+    mu_rev, _, _ = mixture
+    K = mu_rev.shape[0]
+    
+    # Calculate revised pi(j): same expression as in the naive case
+    pi_rev = np.sum(post, axis=0)/n
+    
+    # Create delta matrix indicating where X is non-zero
+    delta = X.astype(bool).astype(int)
+    
+    # Update means only when sum_u(p(j|u)*delta(l,Cu)) >= 1
+    denom = post.T @ delta # Denominator (K,d): Only include dims that have information
+    numer = post.T @ X  # Numerator (K,d)
+    update_indices = np.where(denom >= 1)   # Indices for update
+    mu_rev[update_indices] = numer[update_indices]/denom[update_indices] # Only update where necessary (denom>=1)
+    
+    # Update variances
+    denom_var = np.sum(post*np.sum(delta, axis=1).reshape(-1,1), axis=0) # Shape: (K,)
+
+    norms = np.sum(X**2, axis=1)[:,None] + (delta @ mu_rev.T**2) - 2*(X @ mu_rev.T)
+    
+######## End: vectorized version #########
+    
+    # Revised var: if var(j) < 0.25, set it = 0.25
+    var_rev = np.maximum(np.sum(post*norms, axis=0)/denom_var, min_variance)  
+    
+    return GaussianMixture(mu_rev, var_rev, pi_rev)
 
 
 def run(X: np.ndarray, mixture: GaussianMixture,
@@ -55,7 +158,18 @@ def run(X: np.ndarray, mixture: GaussianMixture,
             for all components for all examples
         float: log-likelihood of the current assignment
     """
-    raise NotImplementedError
+    old_log_lh = None
+    new_log_lh = None
+
+    while old_log_lh is None or (new_log_lh - old_log_lh > 1e-6*np.abs(new_log_lh)):
+        
+        old_log_lh = new_log_lh
+
+        (post, new_log_lh) = estep(X,mixture)
+
+        mixture = mstep(X, post, mixture)
+
+    return (mixture,post, new_log_lh)
 
 
 def fill_matrix(X: np.ndarray, mixture: GaussianMixture) -> np.ndarray:
@@ -68,4 +182,45 @@ def fill_matrix(X: np.ndarray, mixture: GaussianMixture) -> np.ndarray:
     Returns
         np.ndarray: a (n, d) array with completed data
     """
-    raise NotImplementedError
+    #def log_gaussian(x: np.ndarray, mean: np.ndarray, var: np.ndarray) -> float:
+    """Computes the log probablity of vector x under a normal distribution
+        Args:
+            x: (d, ) array holding the vector's coordinates
+            mean: (d, ) mean of the gaussian
+            var: variance of the gaussian
+        Returns:
+            float: the log probability
+        """
+    """    d = len(x)
+        log_prob = -d / 2.0 * np.log(2 * np.pi * var)
+        log_prob -= 0.5 * ((x - mean) ** 2).sum() / var
+        return log_prob
+
+
+    n, d = X.shape
+    K, _ = mixture.mu.shape
+    X_pred = X.copy()
+
+    for i in range(n):
+        mask = (X[i, :] != 0)
+        mask0 = (X[i, :] == 0)
+        post = np.zeros(K)
+        for j in range(K):
+            log_likelihood = log_gaussian(X[i, mask], mixture.mu[j, mask],
+                                          mixture.var[j])
+            post[j] = np.log(mixture.p[j]) + log_likelihood
+        post = np.exp(post - logsumexp(post))
+
+        X_pred[i, mask0] = np.dot(post, mixture.mu[:, mask0])
+
+    return X_pred"""
+    X_pred = X.copy()
+    mu, _, _ = mixture
+    
+    post, _ = estep(X, mixture)
+    
+    # Missing entries to be filled
+    miss_indices = np.where(X == 0)
+    X_pred[miss_indices] = (post @ mu)[miss_indices]
+    
+    return X_pred
