@@ -20,15 +20,41 @@ class CNN(nn.Module):
     def __init__(self, input_dimension):
         super(CNN, self).__init__()
         # TODO initialize model layers here
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=(3, 3))
+        self.relu1 = nn.ReLU()
+        self.maxpool1 = nn.MaxPool2d(kernel_size=(2, 2))
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=(3, 3))
+        self.relu2 = nn.ReLU()
+        self.maxpool2 = nn.MaxPool2d(kernel_size=(2, 2))
+        self.flatten = Flatten()
+        self.fc1 = nn.Linear(2880, 128)  
+        self.relu3 = nn.ReLU()
+        self.dropout = nn.Dropout(0.5)
+        self.fc2 = nn.Linear(128, 20)
 
     def forward(self, x):
 
         # TODO use model layers to predict the two digits
+        x = self.conv1(x)
+        x = self.relu1(x)
+        x = self.maxpool1(x)
+        x = self.conv2(x)
+        x = self.relu2(x)
+        x = self.maxpool2(x)
+        x = self.flatten(x)
+        x = self.fc1(x)
+        x = self.relu3(x)
+        x = self.dropout(x)
+        x = self.fc2(x)
+        out_first_digit = x[:,:10]
+        out_second_digit = x[:,10:]
 
         return out_first_digit, out_second_digit
 
 def main():
     X_train, y_train, X_test, y_test = U.get_data(path_to_data_dir, use_mini_dataset)
+
+    #print(y_train.shape)
 
     # Split into train and dev
     dev_split_index = int(9 * len(X_train) / 10)
@@ -46,11 +72,14 @@ def main():
     train_batches = batchify_data(X_train, y_train, batch_size)
     dev_batches = batchify_data(X_dev, y_dev, batch_size)
     test_batches = batchify_data(X_test, y_test, batch_size)
-
+    
     # Load model
     input_dimension = img_rows * img_cols
     model = CNN(input_dimension) # TODO add proper layers to CNN class above
 
+    import torch.optim as optim
+
+    #optimizer = optim.Adam(model.parameters(),lr=0.001)
     # Train
     train_model(train_batches, dev_batches, model)
 
